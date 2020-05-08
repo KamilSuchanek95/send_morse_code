@@ -23,11 +23,12 @@
 #include "stm32f0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32f0308_discovery.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+//.... .- .-.. --- / - ..- / ... . -.- -.-. .--- .- / .--. .. . .-. .-- ... --.. .-
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,6 +53,32 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char msg[] = "Halo tu sekcja pierwsza";
+
+__uint8_t msg_t[] =  {
+		1,1,1,1,4,
+		1,3,4,
+		1,3,1,1,4,
+		3,3,3,7,
+		3,4,
+		1,1,3,7,
+		1,1,1,4,
+		1,4,
+		3,1,3,4,
+		3,1,3,1,4,
+		1,3,3,3,4,
+		1,3,7,
+		1,3,3,1,4,
+		1,1,4,
+		1,4,
+		1,3,1,4,
+		1,3,3,4,
+		1,1,1,4,
+		3,3,1,1,4,
+		1,3,7
+};
+
+
 
 /* USER CODE END 0 */
 
@@ -138,6 +165,20 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f0xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line 0 and 1 interrupts.
+  */
+void EXTI0_1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_1_IRQn 0 */
+	send_message(msg_t);
+  /* USER CODE END EXTI0_1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_1_IRQn 1 */
+
+  /* USER CODE END EXTI0_1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
