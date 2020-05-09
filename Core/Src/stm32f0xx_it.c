@@ -30,29 +30,6 @@
 /* USER CODE BEGIN TD */
 typedef uint8_t STATE;
 /*.... .- .-.. --- / - ..- / ... . -.- -.-. .--- .- / .--. .. . .-. .-- ... --.. .-*/
-uint8_t msg_t[] = {
-		1,1,1,1,2,	/* H */
-		1,3,2,		/* a */
-		1,3,1,1,2,	/* l */
-		3,3,3,6,	/* o */
-		3,2,		/* t */
-		1,1,3,6,	/* u */
-		1,1,1,2,	/* s */
-		3,2,		/* e */
-		3,1,3,2,	/* k */
-		3,1,3,1,2,	/* c */
-		1,3,3,3,2,	/* j */
-		1,3,6,		/* a */
-		1,3,3,1,2,	/* p */
-		1,1,2,		/* i */
-		3,			/* e */
-		1,3,1,2,	/* r */
-		1,3,3,2,	/* w */
-		1,1,1,2,	/* s */
-		3,3,1,1,2,	/* z */
-		1,3,6		/* a */
-};
-uint8_t send = 0;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -69,7 +46,34 @@ uint8_t send = 0;
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+uint8_t msg_t[] = {
+		1,1,1,1,2,	/* H */
+		1,3,2,		/* a */
+		1,3,1,1,2,	/* l */
+		3,3,3,6,	/* o */
+		3,2,		/* t */
+		1,1,3,6,	/* u */
+		1,1,1,2,	/* s */
+		1,2,		/* e */
+		3,1,3,2,	/* k */
+		3,1,3,1,2,	/* c */
+		1,3,3,3,2,	/* j */
+		1,3,6,		/* a */
+		1,3,3,1,2,	/* p */
+		1,1,2,		/* i */
+		1,2,		/* e */
+		1,3,1,2,	/* r */
+		1,3,3,2,	/* w */
+		1,1,1,2,	/* s */
+		3,3,1,1,2,	/* z */
+		1,3,6		/* a */
+};
+uint8_t send = 0;
+uint8_t el = 0;
+uint8_t size_of_msg = sizeof(msg_t)/sizeof(msg_t[0]);
+int8_t counter = -1;
+STATE state = LIGHT_OFF;
+uint8_t my_delay = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -79,10 +83,6 @@ uint8_t send = 0;
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t el = 0;
-int8_t counter = -1;
-uint8_t size_of_msg = sizeof(msg_t)/sizeof(msg_t[0]);
-STATE state = LIGHT_OFF;
 void ziel(){
 	switch(el){
 	case 1:
@@ -205,9 +205,14 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-	if(send > 0) {
-		send_message();
+	my_delay++;
+	if(my_delay > 4){
+		if(send > 0){
+			send_message();
+		}
+		my_delay = 0;
 	}
+
 	/*BSP_LED_Toggle(LED_GREEN);*/
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
@@ -229,7 +234,7 @@ void SysTick_Handler(void)
 void EXTI0_1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_1_IRQn 0 */
-	if(counter>=size_of_msg){
+	if(counter>=size_of_msg || counter < 0){
 		send = 1;
 		state = LIGHT_OFF;
 		counter = -1;
