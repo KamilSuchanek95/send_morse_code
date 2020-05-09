@@ -1,0 +1,7 @@
+stm32f0308_discovery.c:125:10:BSP_GetVersion	0	static
+stm32f0308_discovery.c:138:6:BSP_LED_Init	48	static
+stm32f0308_discovery.c:165:6:BSP_LED_On	8	static
+stm32f0308_discovery.c:178:6:BSP_LED_Off	8	static
+stm32f0308_discovery.c:191:6:BSP_LED_Toggle	8	static
+stm32f0308_discovery.c:207:6:BSP_PB_Init	48	static
+stm32f0308_discovery.c:245:10:BSP_PB_GetState	8	static

@@ -28,12 +28,38 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-//.... .- .-.. --- / - ..- / ... . -.- -.-. .--- .- / .--. .. . .-. .-- ... --.. .-
+typedef uint8_t STATE;
+/*.... .- .-.. --- / - ..- / ... . -.- -.-. .--- .- / .--. .. . .-. .-- ... --.. .-*/
+uint8_t msg_t[] = {
+		1,1,1,1,2,	/* H */
+		1,3,2,		/* a */
+		1,3,1,1,2,	/* l */
+		3,3,3,6,	/* o */
+		3,2,		/* t */
+		1,1,3,6,	/* u */
+		1,1,1,2,	/* s */
+		3,2,		/* e */
+		3,1,3,2,	/* k */
+		3,1,3,1,2,	/* c */
+		1,3,3,3,2,	/* j */
+		1,3,6,		/* a */
+		1,3,3,1,2,	/* p */
+		1,1,2,		/* i */
+		3,			/* e */
+		1,3,1,2,	/* r */
+		1,3,3,2,	/* w */
+		1,1,1,2,	/* s */
+		3,3,1,1,2,	/* z */
+		1,3,6		/* a */
+};
+uint8_t send = 0;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
- 
+#define LIGHT_OFF 0
+#define LIGHT_ON 1
+#define WAITING 2
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -53,39 +79,67 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-char msg[] = "Halo tu sekcja pierwsza";
-
-__uint8_t msg_t[] =  {
-		1,1,1,1,4,
-		1,3,4,
-		1,3,1,1,4,
-		3,3,3,7,
-		3,4,
-		1,1,3,7,
-		1,1,1,4,
-		1,4,
-		3,1,3,4,
-		3,1,3,1,4,
-		1,3,3,3,4,
-		1,3,7,
-		1,3,3,1,4,
-		1,1,4,
-		1,4,
-		1,3,1,4,
-		1,3,3,4,
-		1,1,1,4,
-		3,3,1,1,4,
-		1,3,7
-};
-
-
-
+uint8_t el = 0;
+int8_t counter = -1;
+uint8_t size_of_msg = sizeof(msg_t)/sizeof(msg_t[0]);
+STATE state = LIGHT_OFF;
+void ziel(){
+	switch(el){
+	case 1:
+		BSP_LED_On(LED_GREEN);
+		state = LIGHT_ON;
+		el = el - 1;
+		break;
+	case 3:
+		BSP_LED_On(LED_GREEN);
+		state = LIGHT_ON;
+		el = el - 1;
+		break;
+	case 2:
+		state = WAITING;
+		el = el - 1;
+		break;
+	case 6:
+		state = WAITING;
+		el = el - 1;
+		break;
+	}
+}
+void send_message(){
+	switch(state){
+	case LIGHT_OFF:
+		counter = counter + 1;
+		el = msg_t[counter];
+		ziel();
+		break;
+	case LIGHT_ON:
+		if(el < 1){
+			BSP_LED_Off(LED_GREEN);
+			state = LIGHT_OFF;
+		}else{
+			el = el - 1;
+		}
+		break;
+	case WAITING:
+		if(el < 1){
+			counter = counter + 1;
+			if(counter <= size_of_msg){
+				el = msg_t[counter];
+				ziel();
+			}else{
+				send = 0;
+			}
+		}else{
+			el = el - 1;
+		}
+		break;
+	}
+}
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -151,7 +205,10 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+	if(send > 0) {
+		send_message();
+	}
+	/*BSP_LED_Toggle(LED_GREEN);*/
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -172,7 +229,12 @@ void SysTick_Handler(void)
 void EXTI0_1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_1_IRQn 0 */
-	send_message(msg_t);
+	if(counter>=size_of_msg){
+		send = 1;
+		state = LIGHT_OFF;
+		counter = -1;
+	}
+
   /* USER CODE END EXTI0_1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
