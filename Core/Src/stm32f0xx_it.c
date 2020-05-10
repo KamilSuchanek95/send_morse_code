@@ -206,7 +206,7 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
 	my_delay++;
-	if(my_delay > 4){
+	if(my_delay > 120){
 		if(send > 0){
 			send_message();
 		}

@@ -79,7 +79,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  SysTick_Config((SystemCoreClock/10));
+  SysTick_Config((SystemCoreClock/1000));
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
